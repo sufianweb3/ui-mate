@@ -1,0 +1,74 @@
+name: guard
+
+# This repository is generated. It receives content from one export script and
+# nothing else. These two jobs are the backstop for when that script regresses.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+        with:
+          args: detect --redact --no-banner
+
+  forbidden:
+    name: forbidden file check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: named internal files must never appear
+        run: |
+          set -u
+          bad=0
+          while IFS= read -r f; do
+            case "$f" in
+              CLAUDE.md|AGENT_GUIDE.md|SECURITY_RULES.md|AGENTS.md|LIBRARY.md)
+                echo "::error file=$f::$f is an internal file and must never be published"; bad=1 ;;
+              scripts/*|.claude/*|.githooks/*|.ingest/*|docs/*|site/*|lib/*)
+                echo "::error file=$f::$f lives under an internal directory"; bad=1 ;;
+              *taxonomy.json|*taxonomy-log.md|*tombstones.json|*meta.json|*tags.json)
+                echo "::error file=$f::$f is internal registry data"; bad=1 ;;
+            esac
+          done < <(git ls-files)
+          [ "$bad" -eq 0 ] || { echo "forbidden files present. The export script regressed."; exit 1; }
+          echo "no forbidden file present."
+
+      - name: every tracked file must be on the allowlist
+        run: |
+          set -u
+          bad=0
+          while IFS= read -r f; do
+            case "$f" in
+              components/*/*/[0-9][0-9][0-9][0-9]-*/index.tsx) ;;
+              components/*/*/[0-9][0-9][0-9][0-9]-*/demo.tsx) ;;
+              components/*/*/[0-9][0-9][0-9][0-9]-*/README.md) ;;
+              components/*/*/[0-9][0-9][0-9][0-9]-*/component.json) ;;
+              components/*/*/*/[0-9][0-9][0-9][0-9]-*/index.tsx) ;;
+              components/*/*/*/[0-9][0-9][0-9][0-9]-*/demo.tsx) ;;
+              components/*/*/*/[0-9][0-9][0-9][0-9]-*/README.md) ;;
+              components/*/*/*/[0-9][0-9][0-9][0-9]-*/component.json) ;;
+              public/r/*.json) ;;
+              README.md|LICENSE|CONTRIBUTING.md|package.json|.gitignore|llms.txt) ;;
+              .github/*) ;;
+              *)
+                echo "::error file=$f::$f is not on the publish allowlist"; bad=1 ;;
+            esac
+          done < <(git ls-files)
+          [ "$bad" -eq 0 ] || { echo "unexpected files present. The export script regressed."; exit 1; }
+          echo "every tracked file is on the allowlist."

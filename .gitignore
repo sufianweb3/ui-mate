@@ -1,0 +1,28 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+*.keystore
+secrets.json
+credentials.json
+service-account*.json
+
+# build and tooling
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+coverage/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+
+# never belongs here — this repo is generated
+.ingest/
