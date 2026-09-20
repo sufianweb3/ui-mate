@@ -1,0 +1,45 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "class-merge",
+  "type": "registry:lib",
+  "title": "Class Merge",
+  "description": "The class merge every component root uses: clsx flattens conditionals, then tailwind-merge resolves Tailwind conflicts per utility group so a caller className genuinely overrides rather than races.",
+  "dependencies": [
+    "clsx",
+    "tailwind-merge"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "lib/cn.ts",
+      "target": "lib/cn.ts",
+      "type": "registry:lib",
+      "content": "import { clsx, type ClassValue } from \"clsx\";\nimport { twMerge } from \"tailwind-merge\";\n\nexport type { ClassValue };\n\n/**\n * The class merge every component root in this library uses.\n *\n * Two steps, and the second is the one that matters. `clsx` flattens arrays,\n * objects and conditionals into a string. `tailwind-merge` then resolves Tailwind\n * conflicts by last-one-wins *per utility group*, so a caller passing `px-8`\n * replaces the component's own `px-6` rather than landing beside it and losing to\n * whichever CSS rule happens to come later in the stylesheet.\n *\n * That is what makes `className` a real override rather than a suggestion, and it\n * is why every component in the library merges through this instead of a template\n * literal.\n *\n * No \"use client\": this is a pure function with no hooks and no browser API, so it\n * runs in a server component untouched.\n */\nexport function cn(...inputs: ClassValue[]): string {\n  return twMerge(clsx(inputs));\n}\n\nexport default cn;\n"
+    }
+  ],
+  "meta": {
+    "id": 8,
+    "number": "0008",
+    "level": "system",
+    "category": "utilities",
+    "subcategory": "cn",
+    "group": null,
+    "tags": [
+      "minimal",
+      "css"
+    ],
+    "complexity": "low",
+    "tokens": [],
+    "variants": [],
+    "props": [],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": true
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/8.json",
+    "demo": "import { cn } from \"./index\";\n\n/** The class list a component would carry by default. */\nconst BASE = \"rounded-lg border px-6 py-3 text-sm\";\n\nconst CASES: { label: string; override: string; note: string }[] = [\n  {\n    label: \"No override\",\n    override: \"\",\n    note: \"the component's own classes, untouched\",\n  },\n  {\n    label: \"Conflicting padding\",\n    override: \"px-12\",\n    note: \"px-12 replaces px-6 instead of sitting beside it\",\n  },\n  {\n    label: \"Conflicting radius\",\n    override: \"rounded-none\",\n    note: \"rounded-none wins over rounded-lg\",\n  },\n  {\n    label: \"Additive only\",\n    override: \"font-semibold tracking-wide\",\n    note: \"nothing conflicts, so both survive\",\n  },\n];\n\nexport default function Demo() {\n  return (\n    <div className=\"flex w-full max-w-xl flex-col gap-4\">\n      {CASES.map(({ label, override, note }) => {\n        const merged = cn(BASE, override);\n        return (\n          <div key={label} className=\"flex flex-col gap-2\">\n            <div className=\"flex items-baseline justify-between gap-4\">\n              <span\n                className=\"text-sm font-medium\"\n                style={{ color: \"var(--ui-fg, currentColor)\" }}\n              >\n                {label}\n              </span>\n              <span\n                className=\"font-mono text-xs\"\n                style={{ color: \"var(--ui-muted, currentColor)\" }}\n              >\n                {override || \"—\"}\n              </span>\n            </div>\n\n            <div\n              className={merged}\n              style={{\n                borderColor: \"var(--ui-border, currentColor)\",\n                background: \"var(--ui-bg-subtle, transparent)\",\n                color: \"var(--ui-fg, currentColor)\",\n              }}\n            >\n              {note}\n            </div>\n\n            <code\n              className=\"font-mono text-[0.7rem] leading-relaxed\"\n              style={{ color: \"var(--ui-muted, currentColor)\" }}\n            >\n              {merged}\n            </code>\n          </div>\n        );\n      })}\n    </div>\n  );\n}\n",
+    "path": "utilities/cn/0008-class-merge"
+  }
+}

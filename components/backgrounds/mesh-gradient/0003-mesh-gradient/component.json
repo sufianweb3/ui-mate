@@ -77,7 +77,8 @@
       "react"
     ],
     "registry": [
-      6
+      6,
+      8
     ]
   },
   "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/3.json"

@@ -2,7 +2,7 @@
   "name": "ui-mate",
   "version": "0.1.0",
   "private": true,
-  "description": "6 React components with permanent numbers, installable through the shadcn CLI.",
+  "description": "7 React components with permanent numbers, installable through the shadcn CLI.",
   "license": "MIT",
   "repository": {
     "type": "git",

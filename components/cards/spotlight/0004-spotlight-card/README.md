@@ -46,6 +46,7 @@ it renders correctly before any theme is applied:
 
 - npm: `motion`
 - peer: `react`
+- registry: [#0008](https://ui-mate.pages.dev/0008)
 
 ---
 

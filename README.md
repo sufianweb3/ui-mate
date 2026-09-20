@@ -43,8 +43,9 @@ forever.
   - [#0005 Fade In](https://ui-mate.pages.dev/0005)
 - **typography** (1)
   - [#0002 Split Reveal](https://ui-mate.pages.dev/0002)
-- **utilities** (1)
+- **utilities** (2)
   - [#0006 Use In View](https://ui-mate.pages.dev/0006)
+  - [#0008 Class Merge](https://ui-mate.pages.dev/0008)
 
 ## Machine-readable index
 

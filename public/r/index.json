@@ -1,6 +1,6 @@
 {
   "site": "https://ui-mate.pages.dev",
-  "count": 6,
+  "count": 7,
   "generatedAt": "2026-09-20",
   "components": [
     {
@@ -83,7 +83,9 @@
         "peer": [
           "react"
         ],
-        "registry": []
+        "registry": [
+          8
+        ]
       },
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/1.json",
       "path": "buttons/magnetic/0001-magnetic-button",
@@ -176,7 +178,9 @@
         "peer": [
           "react"
         ],
-        "registry": []
+        "registry": [
+          8
+        ]
       },
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/2.json",
       "path": "typography/text-reveal/0002-split-reveal",
@@ -261,7 +265,8 @@
           "react"
         ],
         "registry": [
-          6
+          6,
+          8
         ]
       },
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/3.json",
@@ -327,7 +332,9 @@
         "peer": [
           "react"
         ],
-        "registry": []
+        "registry": [
+          8
+        ]
       },
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/4.json",
       "path": "cards/spotlight/0004-spotlight-card",
@@ -414,7 +421,8 @@
           "react"
         ],
         "registry": [
-          6
+          6,
+          8
         ]
       },
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/5.json",
@@ -474,6 +482,32 @@
       "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/6.json",
       "path": "utilities/use-in-view/0006-use-in-view",
       "registry": "/r/6.json"
+    },
+    {
+      "id": 8,
+      "number": "0008",
+      "name": "Class Merge",
+      "slug": "class-merge",
+      "category": "utilities",
+      "subcategory": "cn",
+      "group": null,
+      "tags": [
+        "minimal",
+        "css"
+      ],
+      "description": "The class merge every component root uses: clsx flattens conditionals, then tailwind-merge resolves Tailwind conflicts per utility group so a caller className genuinely overrides rather than races.",
+      "props": [],
+      "dependencies": {
+        "npm": [
+          "clsx",
+          "tailwind-merge"
+        ],
+        "peer": [],
+        "registry": []
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/8.json",
+      "path": "utilities/cn/0008-class-merge",
+      "registry": "/r/8.json"
     }
   ]
 }

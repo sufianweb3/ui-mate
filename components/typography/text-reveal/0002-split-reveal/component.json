@@ -85,7 +85,9 @@
     "peer": [
       "react"
     ],
-    "registry": []
+    "registry": [
+      8
+    ]
   },
   "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/2.json"
 }

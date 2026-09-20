@@ -1,0 +1,24 @@
+{
+  "id": 8,
+  "number": "0008",
+  "name": "Class Merge",
+  "slug": "class-merge",
+  "category": "utilities",
+  "subcategory": "cn",
+  "group": null,
+  "tags": [
+    "minimal",
+    "css"
+  ],
+  "description": "The class merge every component root uses: clsx flattens conditionals, then tailwind-merge resolves Tailwind conflicts per utility group so a caller className genuinely overrides rather than races.",
+  "props": [],
+  "dependencies": {
+    "npm": [
+      "clsx",
+      "tailwind-merge"
+    ],
+    "peer": [],
+    "registry": []
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/8.json"
+}
