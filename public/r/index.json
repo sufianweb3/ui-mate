@@ -1,0 +1,479 @@
+{
+  "site": "https://ui-mate.pages.dev",
+  "count": 6,
+  "generatedAt": "2026-09-20",
+  "components": [
+    {
+      "id": 1,
+      "number": "0001",
+      "name": "Magnetic Button",
+      "slug": "magnetic-button",
+      "category": "buttons",
+      "subcategory": "magnetic",
+      "group": null,
+      "tags": [
+        "magnetic",
+        "pointer",
+        "spring",
+        "minimal"
+      ],
+      "description": "A button that leans toward the cursor with a distance-falloff pull, its label travelling a further fraction so the two arrive at different rates.",
+      "props": [
+        {
+          "name": "strength",
+          "type": "number",
+          "default": 18,
+          "required": false,
+          "description": "Maximum travel toward the cursor in pixels, reached only at dead centre."
+        },
+        {
+          "name": "radius",
+          "type": "number",
+          "default": 90,
+          "required": false,
+          "description": "Capture distance in pixels; outside it the button does not react at all."
+        },
+        {
+          "name": "labelFactor",
+          "type": "number",
+          "default": 0.35,
+          "required": false,
+          "description": "Extra travel applied to the label on top of the button's own, as a fraction."
+        },
+        {
+          "name": "stiffness",
+          "type": "number",
+          "default": 300,
+          "required": false,
+          "description": "Spring stiffness for both the follow and the release."
+        },
+        {
+          "name": "damping",
+          "type": "number",
+          "default": 40,
+          "required": false,
+          "description": "Spring damping; below about 25 the release visibly overshoots."
+        },
+        {
+          "name": "mass",
+          "type": "number",
+          "default": 0.4,
+          "required": false,
+          "description": "Spring mass. Higher values feel heavier and arrive later."
+        },
+        {
+          "name": "variant",
+          "type": "\"solid\" | \"outline\" | \"ghost\"",
+          "default": "solid",
+          "required": false,
+          "description": "Visual weight, from filled accent down to type only."
+        },
+        {
+          "name": "size",
+          "type": "\"sm\" | \"md\" | \"lg\"",
+          "default": "md",
+          "required": false,
+          "description": "Height, horizontal padding and type size together."
+        }
+      ],
+      "dependencies": {
+        "npm": [
+          "motion"
+        ],
+        "peer": [
+          "react"
+        ],
+        "registry": []
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/1.json",
+      "path": "buttons/magnetic/0001-magnetic-button",
+      "registry": "/r/1.json"
+    },
+    {
+      "id": 2,
+      "number": "0002",
+      "name": "Split Reveal",
+      "slug": "split-reveal",
+      "category": "typography",
+      "subcategory": "text-reveal",
+      "group": null,
+      "tags": [
+        "typography",
+        "reveal",
+        "mask",
+        "in-view",
+        "stagger"
+      ],
+      "description": "Text wiped into place from behind a per-piece mask on entering view, at character, word or authored-line granularity, with the full string kept as a single accessible label.",
+      "props": [
+        {
+          "name": "text",
+          "type": "string",
+          "required": true,
+          "description": "The string to reveal. Plain text, so it can be split without walking children."
+        },
+        {
+          "name": "split",
+          "type": "\"character\" | \"word\" | \"line\"",
+          "default": "character",
+          "required": false,
+          "description": "What gets its own mask. Lines split on authored newlines, not measured wraps."
+        },
+        {
+          "name": "as",
+          "type": "ElementType",
+          "default": "span",
+          "required": false,
+          "description": "Root element, so the heading level matches the document outline."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "default": 0.8,
+          "required": false,
+          "description": "Seconds each piece takes to clear its mask."
+        },
+        {
+          "name": "stagger",
+          "type": "number",
+          "default": 0.03,
+          "required": false,
+          "description": "Seconds between consecutive pieces starting."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": 0,
+          "required": false,
+          "description": "Seconds before the first piece moves."
+        },
+        {
+          "name": "distance",
+          "type": "number",
+          "default": 110,
+          "required": false,
+          "description": "How far below the mask each piece starts, as a percentage of its own height."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "default": 0.4,
+          "required": false,
+          "description": "Fraction of the element that must be visible before it starts."
+        },
+        {
+          "name": "repeat",
+          "type": "boolean",
+          "default": false,
+          "required": false,
+          "description": "Replay on every re-entry instead of only the first."
+        }
+      ],
+      "dependencies": {
+        "npm": [
+          "motion"
+        ],
+        "peer": [
+          "react"
+        ],
+        "registry": []
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/2.json",
+      "path": "typography/text-reveal/0002-split-reveal",
+      "registry": "/r/2.json"
+    },
+    {
+      "id": 3,
+      "number": "0003",
+      "name": "Mesh Gradient",
+      "slug": "mesh-gradient",
+      "category": "backgrounds",
+      "subcategory": "mesh-gradient",
+      "group": null,
+      "tags": [
+        "gradient",
+        "animated",
+        "canvas",
+        "ambient",
+        "background"
+      ],
+      "description": "Multi-point blended color field on canvas where each point orbits its own anchor on its own period, so the drift has no visible loop length and no discrete shape edges.",
+      "props": [
+        {
+          "name": "colors",
+          "type": "string[]",
+          "default": [
+            "--ui-accent",
+            "--ui-bg-subtle",
+            "--ui-muted"
+          ],
+          "required": false,
+          "description": "Token names sampled for the blend points; three to five reads best."
+        },
+        {
+          "name": "points",
+          "type": "number",
+          "default": 5,
+          "required": false,
+          "description": "Number of blend points. Above six the field turns to mud at any size."
+        },
+        {
+          "name": "speed",
+          "type": "number",
+          "default": 0.4,
+          "required": false,
+          "description": "Drift rate. 0 draws one static frame and never schedules a loop."
+        },
+        {
+          "name": "blur",
+          "type": "number",
+          "default": 0.18,
+          "required": false,
+          "description": "Blur radius as a fraction of 100px; this is what removes the circle edges."
+        },
+        {
+          "name": "grain",
+          "type": "number",
+          "default": 0.035,
+          "required": false,
+          "description": "Opacity of the noise overlay that stops the blend banding. 0 removes it."
+        },
+        {
+          "name": "seed",
+          "type": "number",
+          "default": 7,
+          "required": false,
+          "description": "Deterministic layout — the same seed always gives the same arrangement."
+        },
+        {
+          "name": "resolution",
+          "type": "number",
+          "default": 0.6,
+          "required": false,
+          "description": "Backing store scale. 1 is sharp and costly; 0.6 is invisible behind the blur."
+        }
+      ],
+      "dependencies": {
+        "npm": [
+          "motion"
+        ],
+        "peer": [
+          "react"
+        ],
+        "registry": [
+          6
+        ]
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/3.json",
+      "path": "backgrounds/mesh-gradient/0003-mesh-gradient",
+      "registry": "/r/3.json"
+    },
+    {
+      "id": 4,
+      "number": "0004",
+      "name": "Spotlight Card",
+      "slug": "spotlight-card",
+      "category": "cards",
+      "subcategory": "spotlight",
+      "group": null,
+      "tags": [
+        "pointer",
+        "glow",
+        "hover",
+        "css"
+      ],
+      "description": "Pointer-tracked radial highlight inside the card with a masked border glow sharing the same origin, driven entirely through CSS custom properties so moving the pointer never re-renders.",
+      "props": [
+        {
+          "name": "size",
+          "type": "number",
+          "default": 320,
+          "required": false,
+          "description": "Radius of the highlight in pixels; scale it with the card, not the page."
+        },
+        {
+          "name": "intensity",
+          "type": "number",
+          "default": 0.1,
+          "required": false,
+          "description": "Peak opacity of the interior light. Above 0.2 it starts fighting body text."
+        },
+        {
+          "name": "borderIntensity",
+          "type": "number",
+          "default": 0.55,
+          "required": false,
+          "description": "Peak opacity of the border glow. Set 0 for an interior-only light."
+        },
+        {
+          "name": "color",
+          "type": "string",
+          "default": "--ui-accent",
+          "required": false,
+          "description": "Token the light is made from."
+        },
+        {
+          "name": "fade",
+          "type": "number",
+          "default": 0.3,
+          "required": false,
+          "description": "Seconds to fade in on enter and out on leave; forced to 0 under reduced motion."
+        }
+      ],
+      "dependencies": {
+        "npm": [
+          "motion"
+        ],
+        "peer": [
+          "react"
+        ],
+        "registry": []
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/4.json",
+      "path": "cards/spotlight/0004-spotlight-card",
+      "registry": "/r/4.json"
+    },
+    {
+      "id": 5,
+      "number": "0005",
+      "name": "Fade In",
+      "slug": "fade-in",
+      "category": "scroll",
+      "subcategory": "reveal",
+      "group": null,
+      "tags": [
+        "in-view",
+        "reveal",
+        "stagger",
+        "animated"
+      ],
+      "description": "The generic in-view wrapper: fades and rises its content once on entering the viewport, adding no markup of its own, and with stagger set it sequences direct children by merging style onto them rather than wrapping them.",
+      "props": [
+        {
+          "name": "as",
+          "type": "ElementType",
+          "default": "div",
+          "required": false,
+          "description": "Root element. Use ul or ol when the children are list items."
+        },
+        {
+          "name": "duration",
+          "type": "number",
+          "default": 0.6,
+          "required": false,
+          "description": "Seconds of the fade and rise."
+        },
+        {
+          "name": "delay",
+          "type": "number",
+          "default": 0,
+          "required": false,
+          "description": "Seconds before it starts."
+        },
+        {
+          "name": "distance",
+          "type": "number",
+          "default": 16,
+          "required": false,
+          "description": "Rise distance in pixels; negative values drop in from above instead."
+        },
+        {
+          "name": "threshold",
+          "type": "number",
+          "default": 0.15,
+          "required": false,
+          "description": "Fraction of the element that must be visible before it fires."
+        },
+        {
+          "name": "rootMargin",
+          "type": "string",
+          "default": "0px",
+          "required": false,
+          "description": "Shifts the trigger line; a negative bottom margin fires later."
+        },
+        {
+          "name": "stagger",
+          "type": "number",
+          "default": 0,
+          "required": false,
+          "description": "Seconds between direct children. 0 animates the wrapper as one block."
+        },
+        {
+          "name": "repeat",
+          "type": "boolean",
+          "default": false,
+          "required": false,
+          "description": "Replay on every re-entry instead of latching after the first."
+        }
+      ],
+      "dependencies": {
+        "npm": [
+          "motion"
+        ],
+        "peer": [
+          "react"
+        ],
+        "registry": [
+          6
+        ]
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/5.json",
+      "path": "scroll/reveal/0005-fade-in",
+      "registry": "/r/5.json"
+    },
+    {
+      "id": 6,
+      "number": "0006",
+      "name": "Use In View",
+      "slug": "use-in-view",
+      "category": "utilities",
+      "subcategory": "use-in-view",
+      "group": null,
+      "tags": [
+        "in-view",
+        "scroll"
+      ],
+      "description": "IntersectionObserver as a hook returning a ref and a boolean, defaulting to fire once and reporting true when the observer is unavailable so content is never stranded.",
+      "props": [
+        {
+          "name": "threshold",
+          "type": "number",
+          "default": 0.2,
+          "required": false,
+          "description": "Fraction of the element that must be visible before it counts as in view."
+        },
+        {
+          "name": "rootMargin",
+          "type": "string",
+          "default": "0px",
+          "required": false,
+          "description": "CSS margin grown around the root bounds; negative values delay the trigger."
+        },
+        {
+          "name": "once",
+          "type": "boolean",
+          "default": true,
+          "required": false,
+          "description": "Disconnect after the first entry. Set false to have the boolean flip both ways."
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": false,
+          "required": false,
+          "description": "Skip observing and report true at once — what reduced-motion branches pass in."
+        }
+      ],
+      "dependencies": {
+        "npm": [],
+        "peer": [
+          "react"
+        ],
+        "registry": []
+      },
+      "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/6.json",
+      "path": "utilities/use-in-view/0006-use-in-view",
+      "registry": "/r/6.json"
+    }
+  ]
+}

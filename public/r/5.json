@@ -1,0 +1,105 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "fade-in",
+  "type": "registry:ui",
+  "title": "Fade In",
+  "description": "The generic in-view wrapper: fades and rises its content once on entering the viewport, adding no markup of its own, and with stagger set it sequences direct children by merging style onto them rather than wrapping them.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [
+    "https://ui-mate.pages.dev/r/6.json"
+  ],
+  "files": [
+    {
+      "path": "components/ui/fade-in.tsx",
+      "target": "components/ui/fade-in.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\";\n\nimport {\n  Children,\n  cloneElement,\n  forwardRef,\n  isValidElement,\n  useCallback,\n  type CSSProperties,\n  type ElementType,\n  type HTMLAttributes,\n  type ReactElement,\n} from \"react\";\nimport { useReducedMotion } from \"motion/react\";\nimport { useInView } from \"@/lib/use-in-view\";\nimport { cn } from \"@/lib/cn\";\n\nexport interface FadeInProps extends HTMLAttributes<HTMLDivElement> {\n  /** Element rendered at the root. Use a list element when wrapping list items. */\n  as?: ElementType;\n  /** Seconds of the fade and rise. */\n  duration?: number;\n  /** Seconds before it starts. */\n  delay?: number;\n  /** How far it rises from, in pixels. Negative values drop in from above. */\n  distance?: number;\n  /** Fraction of the element that must be visible before it fires. */\n  threshold?: number;\n  /** Shift the trigger line. A negative bottom margin fires later. */\n  rootMargin?: string;\n  /** Animate direct children in sequence rather than the wrapper as one block. */\n  stagger?: number;\n  /** Replay on every re-entry instead of latching after the first. */\n  repeat?: boolean;\n}\n\nconst EASE = \"cubic-bezier(0.22, 1, 0.36, 1)\";\n\n/**\n * The generic in-view wrapper: fades and rises whatever it is given, once, when it\n * reaches the viewport. Deliberately the dullest component in the library — it is the\n * one that gets used a hundred times, so it does exactly one thing and adds no markup\n * of its own beyond the root.\n *\n * With `stagger` set it animates its direct children in sequence instead, which is the\n * only reason to reach past a plain CSS transition.\n *\n * The content is always rendered and always in the accessible tree; only opacity and\n * transform change. Nothing is gated on being seen.\n */\nexport const FadeIn = forwardRef<HTMLDivElement, FadeInProps>(function FadeIn(\n  {\n    as: Tag = \"div\",\n    duration = 0.6,\n    delay = 0,\n    distance = 16,\n    threshold = 0.15,\n    rootMargin = \"0px\",\n    stagger = 0,\n    repeat = false,\n    className,\n    style,\n    children,\n    ...rest\n  },\n  forwardedRef,\n) {\n  const prefersReduced = useReducedMotion();\n\n  // #0006. `disabled` short-circuits the observer entirely under reduced motion, so\n  // there is no observer, no transition and no waiting — the content is just there.\n  const [inViewRef, inView] = useInView<HTMLDivElement>({\n    threshold,\n    rootMargin,\n    once: !repeat,\n    disabled: Boolean(prefersReduced),\n  });\n\n  const setRefs = useCallback(\n    (node: HTMLDivElement | null) => {\n      inViewRef.current = node;\n      if (typeof forwardedRef === \"function\") forwardedRef(node);\n      else if (forwardedRef) forwardedRef.current = node;\n    },\n    [forwardedRef, inViewRef],\n  );\n\n  const shown = prefersReduced || inView;\n\n  const transition = (index: number): string =>\n    prefersReduced\n      ? \"none\"\n      : `opacity ${duration}s ${EASE} ${delay + index * stagger}s, transform ${duration}s ${EASE} ${delay + index * stagger}s`;\n\n  const hidden = {\n    opacity: 0,\n    transform: `translate3d(0, ${distance}px, 0)`,\n  } as const;\n  const visible = { opacity: 1, transform: \"translate3d(0, 0, 0)\" } as const;\n\n  if (stagger > 0) {\n    return (\n      <Tag ref={setRefs} className={cn(className)} style={style} {...rest}>\n        {/*\n          The style is merged onto each child rather than into a wrapper div, so an\n          `as=\"ul\"` keeps valid `li` children and a grid parent keeps its direct\n          children as grid items. A child's own style still wins.\n        */}\n        {Children.map(children, (child, i) => {\n          if (!isValidElement(child)) return child;\n          const element = child as ReactElement<{ style?: CSSProperties }>;\n          return cloneElement(element, {\n            style: {\n              ...(shown ? visible : hidden),\n              transition: transition(i),\n              willChange: prefersReduced ? undefined : \"opacity, transform\",\n              ...element.props.style,\n            },\n          });\n        })}\n      </Tag>\n    );\n  }\n\n  return (\n    <Tag\n      ref={setRefs}\n      className={cn(className)}\n      style={{\n        ...(shown ? visible : hidden),\n        transition: transition(0),\n        willChange: prefersReduced ? undefined : \"opacity, transform\",\n        ...style,\n      }}\n      {...rest}\n    >\n      {children}\n    </Tag>\n  );\n});\n\nFadeIn.displayName = \"FadeIn\";\n\nexport default FadeIn;\n"
+    }
+  ],
+  "meta": {
+    "id": 5,
+    "number": "0005",
+    "level": "component",
+    "category": "scroll",
+    "subcategory": "reveal",
+    "group": null,
+    "tags": [
+      "in-view",
+      "reveal",
+      "stagger",
+      "animated"
+    ],
+    "complexity": "low",
+    "tokens": [],
+    "variants": [],
+    "props": [
+      {
+        "name": "as",
+        "type": "ElementType",
+        "default": "div",
+        "required": false,
+        "description": "Root element. Use ul or ol when the children are list items."
+      },
+      {
+        "name": "duration",
+        "type": "number",
+        "default": 0.6,
+        "required": false,
+        "description": "Seconds of the fade and rise."
+      },
+      {
+        "name": "delay",
+        "type": "number",
+        "default": 0,
+        "required": false,
+        "description": "Seconds before it starts."
+      },
+      {
+        "name": "distance",
+        "type": "number",
+        "default": 16,
+        "required": false,
+        "description": "Rise distance in pixels; negative values drop in from above instead."
+      },
+      {
+        "name": "threshold",
+        "type": "number",
+        "default": 0.15,
+        "required": false,
+        "description": "Fraction of the element that must be visible before it fires."
+      },
+      {
+        "name": "rootMargin",
+        "type": "string",
+        "default": "0px",
+        "required": false,
+        "description": "Shifts the trigger line; a negative bottom margin fires later."
+      },
+      {
+        "name": "stagger",
+        "type": "number",
+        "default": 0,
+        "required": false,
+        "description": "Seconds between direct children. 0 animates the wrapper as one block."
+      },
+      {
+        "name": "repeat",
+        "type": "boolean",
+        "default": false,
+        "required": false,
+        "description": "Replay on every re-entry instead of latching after the first."
+      }
+    ],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": false
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/5.json",
+    "demo": "import { FadeIn } from \"./index\";\n\nconst milestones = [\n  [\"2019\", \"Two people and one client in a borrowed office\"],\n  [\"2021\", \"First platform build, eleven people\"],\n  [\"2023\", \"Opened the Lisbon studio\"],\n  [\"2026\", \"Thirty-one people across three cities\"],\n];\n\nexport default function Demo() {\n  return (\n    <div\n      className=\"mx-auto w-full max-w-2xl p-12\"\n      style={{\n        background: \"var(--ui-bg, transparent)\",\n        color: \"var(--ui-fg, currentColor)\",\n      }}\n    >\n      <p\n        className=\"mb-8 text-sm\"\n        style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n      >\n        Scroll the panel below.\n      </p>\n\n      <div className=\"h-[460px] space-y-24 overflow-y-auto pr-3\">\n        <div className=\"h-24\" />\n\n        <FadeIn>\n          <h2 className=\"text-4xl font-medium tracking-tight\">\n            One block, one fade\n          </h2>\n          <p\n            className=\"mt-3\"\n            style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n          >\n            The wrapper animates as a single unit. This is the default and\n            covers most uses.\n          </p>\n        </FadeIn>\n\n        {/* stagger with as=\"ul\": the style lands on each li, so the list stays a list. */}\n        <FadeIn as=\"ul\" stagger={0.09} distance={22} className=\"space-y-4\">\n          {milestones.map(([year, text]) => (\n            <li\n              key={year}\n              className=\"flex gap-6 border-t pt-4\"\n              style={{ borderColor: \"var(--ui-border, currentColor)\" }}\n            >\n              <span\n                className=\"font-mono text-sm\"\n                style={{ color: \"var(--ui-accent, currentColor)\" }}\n              >\n                {year}\n              </span>\n              <span>{text}</span>\n            </li>\n          ))}\n        </FadeIn>\n\n        <FadeIn distance={-28} duration={1} threshold={0.6}>\n          <p className=\"text-2xl leading-snug\">\n            Dropping in from above, slower, and waiting until it is properly on\n            screen.\n          </p>\n        </FadeIn>\n\n        <div className=\"h-48\" />\n      </div>\n    </div>\n  );\n}\n",
+    "path": "scroll/reveal/0005-fade-in"
+  }
+}

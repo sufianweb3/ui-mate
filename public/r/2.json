@@ -1,0 +1,116 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "split-reveal",
+  "type": "registry:ui",
+  "title": "Split Reveal",
+  "description": "Text wiped into place from behind a per-piece mask on entering view, at character, word or authored-line granularity, with the full string kept as a single accessible label.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/split-reveal.tsx",
+      "target": "components/ui/split-reveal.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\";\n\nimport {\n  forwardRef,\n  useMemo,\n  type ElementType,\n  type HTMLAttributes,\n} from \"react\";\nimport { motion, useReducedMotion } from \"motion/react\";\nimport { cn } from \"@/lib/cn\";\n\nexport interface SplitRevealProps extends Omit<\n  HTMLAttributes<HTMLElement>,\n  // React's animation and drag handlers collide with motion's props of the same\n  // names on the animated root.\n  | \"children\"\n  | \"onDrag\"\n  | \"onDragStart\"\n  | \"onDragEnd\"\n  | \"onAnimationStart\"\n  | \"onAnimationEnd\"\n> {\n  /** The text to reveal. A plain string, so it can be split without walking children. */\n  text: string;\n  /** What gets its own mask: letters, words or whole lines. */\n  split?: \"character\" | \"word\" | \"line\";\n  /** Element rendered at the root. Use the heading level the page actually needs. */\n  as?: ElementType;\n  /** Seconds each piece takes to clear its mask. */\n  duration?: number;\n  /** Seconds between one piece starting and the next. */\n  stagger?: number;\n  /** Seconds before the first piece moves. */\n  delay?: number;\n  /** How far each piece rises from, as a percentage of its own line height. */\n  distance?: number;\n  /** Fraction of the element that must be visible before it starts. */\n  threshold?: number;\n  /** Replay every time it re-enters the viewport instead of only the first time. */\n  repeat?: boolean;\n}\n\nconst EASE = [0.22, 1, 0.36, 1] as const;\n\n/**\n * Text uncovered from behind a mask, per character, word or line. Each piece sits in\n * an overflow-hidden box and starts below it, so the glyphs are wiped into place\n * rather than faded — nothing is ever shown at partial opacity.\n *\n * The full string stays in the accessible tree as one label and every split piece is\n * hidden from it, so a screen reader hears \"Built for the work that matters\" rather\n * than thirty-one separate letters.\n */\nexport const SplitReveal = forwardRef<HTMLElement, SplitRevealProps>(\n  function SplitReveal(\n    {\n      text,\n      split = \"character\",\n      as: Tag = \"span\",\n      duration = 0.8,\n      stagger = 0.03,\n      delay = 0,\n      distance = 110,\n      threshold = 0.4,\n      repeat = false,\n      className,\n      ...rest\n    },\n    ref,\n  ) {\n    const prefersReduced = useReducedMotion();\n\n    /**\n     * Words are kept whole even when splitting by character, so the line can still\n     * break at a space and a word is never torn across two lines.\n     */\n    const groups = useMemo(() => {\n      // \"line\" splits on explicit newlines rather than measuring wrapped lines. A\n      // measured split needs layout and has to reflow on every resize, which is a\n      // different component; author the breaks and they are honoured exactly.\n      if (split === \"line\") return text.split(\"\\n\").map((line) => [line]);\n      const words = text.split(/(\\s+)/).filter((w) => w.length > 0);\n      if (split === \"word\") return words.map((w) => [w]);\n      return words.map((w) => (/^\\s+$/.test(w) ? [w] : [...w]));\n    }, [text, split]);\n\n    // Memoised: motion.create returns a new component type on every call, and an\n    // unmemoised one would remount the entire tree on each render.\n    const MotionTag = useMemo(() => motion.create(Tag as ElementType), [Tag]);\n\n    // Reduced motion: the text is simply present. No mask, no transform, no stagger.\n    if (prefersReduced) {\n      return (\n        <Tag ref={ref} className={cn(\"block\", className)} {...rest}>\n          {text}\n        </Tag>\n      );\n    }\n\n    let index = -1;\n\n    return (\n      <MotionTag\n        ref={ref}\n        aria-label={text}\n        initial=\"hidden\"\n        whileInView=\"shown\"\n        viewport={{ once: !repeat, amount: threshold }}\n        className={cn(\"block\", className)}\n        style={{ color: \"var(--ui-fg, currentColor)\" }}\n        {...rest}\n      >\n        {groups.map((pieces, gi) => (\n          <span\n            key={`g-${gi}`}\n            aria-hidden=\"true\"\n            // inline-flex keeps a word's letters together as one breakable unit;\n            // an authored line needs its own block so the break actually happens.\n            className={\n              split === \"line\"\n                ? \"block\"\n                : split === \"character\"\n                  ? \"inline-flex\"\n                  : \"inline-block\"\n            }\n            style={{ whiteSpace: \"pre\" }}\n          >\n            {pieces.map((piece, pi) => {\n              index += 1;\n              const at = index;\n              return (\n                <span\n                  key={`p-${gi}-${pi}`}\n                  className=\"inline-block overflow-hidden align-bottom\"\n                  // Room for descenders, which a tight mask would clip.\n                  style={{ paddingBottom: \"0.12em\", marginBottom: \"-0.12em\" }}\n                >\n                  <motion.span\n                    className=\"inline-block\"\n                    style={{ willChange: \"transform\" }}\n                    variants={{\n                      hidden: { y: `${distance}%` },\n                      shown: {\n                        y: \"0%\",\n                        transition: {\n                          duration,\n                          delay: delay + at * stagger,\n                          ease: EASE,\n                        },\n                      },\n                    }}\n                  >\n                    {piece}\n                  </motion.span>\n                </span>\n              );\n            })}\n          </span>\n        ))}\n      </MotionTag>\n    );\n  },\n);\n\nSplitReveal.displayName = \"SplitReveal\";\n\nexport default SplitReveal;\n"
+    }
+  ],
+  "meta": {
+    "id": 2,
+    "number": "0002",
+    "level": "component",
+    "category": "typography",
+    "subcategory": "text-reveal",
+    "group": null,
+    "tags": [
+      "typography",
+      "reveal",
+      "mask",
+      "in-view",
+      "stagger"
+    ],
+    "complexity": "medium",
+    "tokens": [
+      "--ui-fg"
+    ],
+    "variants": [
+      "character",
+      "word",
+      "line"
+    ],
+    "props": [
+      {
+        "name": "text",
+        "type": "string",
+        "required": true,
+        "description": "The string to reveal. Plain text, so it can be split without walking children."
+      },
+      {
+        "name": "split",
+        "type": "\"character\" | \"word\" | \"line\"",
+        "default": "character",
+        "required": false,
+        "description": "What gets its own mask. Lines split on authored newlines, not measured wraps."
+      },
+      {
+        "name": "as",
+        "type": "ElementType",
+        "default": "span",
+        "required": false,
+        "description": "Root element, so the heading level matches the document outline."
+      },
+      {
+        "name": "duration",
+        "type": "number",
+        "default": 0.8,
+        "required": false,
+        "description": "Seconds each piece takes to clear its mask."
+      },
+      {
+        "name": "stagger",
+        "type": "number",
+        "default": 0.03,
+        "required": false,
+        "description": "Seconds between consecutive pieces starting."
+      },
+      {
+        "name": "delay",
+        "type": "number",
+        "default": 0,
+        "required": false,
+        "description": "Seconds before the first piece moves."
+      },
+      {
+        "name": "distance",
+        "type": "number",
+        "default": 110,
+        "required": false,
+        "description": "How far below the mask each piece starts, as a percentage of its own height."
+      },
+      {
+        "name": "threshold",
+        "type": "number",
+        "default": 0.4,
+        "required": false,
+        "description": "Fraction of the element that must be visible before it starts."
+      },
+      {
+        "name": "repeat",
+        "type": "boolean",
+        "default": false,
+        "required": false,
+        "description": "Replay on every re-entry instead of only the first."
+      }
+    ],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": false
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/2.json",
+    "demo": "import { SplitReveal } from \"./index\";\n\nexport default function Demo() {\n  return (\n    <div\n      className=\"mx-auto flex min-h-[560px] w-full max-w-3xl flex-col justify-center gap-16 p-12\"\n      style={{\n        background: \"var(--ui-bg, transparent)\",\n        color: \"var(--ui-fg, currentColor)\",\n      }}\n    >\n      <SplitReveal\n        as=\"h2\"\n        text=\"Built for the work that matters\"\n        className=\"text-5xl font-medium tracking-tight sm:text-6xl\"\n      />\n\n      <SplitReveal\n        as=\"p\"\n        split=\"word\"\n        text=\"Northwind Analytics moved eleven years of reporting onto one surface in a single quarter.\"\n        stagger={0.05}\n        duration={0.65}\n        className=\"max-w-xl text-xl\"\n      />\n\n      <SplitReveal\n        as=\"p\"\n        split=\"line\"\n        text={\"Three studios.\\nOne shared language.\\nNo handover documents.\"}\n        stagger={0.12}\n        distance={130}\n        className=\"text-2xl leading-snug\"\n        style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n      />\n    </div>\n  );\n}\n",
+    "path": "typography/text-reveal/0002-split-reveal"
+  }
+}

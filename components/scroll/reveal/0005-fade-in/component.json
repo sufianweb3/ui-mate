@@ -1,0 +1,86 @@
+{
+  "id": 5,
+  "number": "0005",
+  "name": "Fade In",
+  "slug": "fade-in",
+  "category": "scroll",
+  "subcategory": "reveal",
+  "group": null,
+  "tags": [
+    "in-view",
+    "reveal",
+    "stagger",
+    "animated"
+  ],
+  "description": "The generic in-view wrapper: fades and rises its content once on entering the viewport, adding no markup of its own, and with stagger set it sequences direct children by merging style onto them rather than wrapping them.",
+  "props": [
+    {
+      "name": "as",
+      "type": "ElementType",
+      "default": "div",
+      "required": false,
+      "description": "Root element. Use ul or ol when the children are list items."
+    },
+    {
+      "name": "duration",
+      "type": "number",
+      "default": 0.6,
+      "required": false,
+      "description": "Seconds of the fade and rise."
+    },
+    {
+      "name": "delay",
+      "type": "number",
+      "default": 0,
+      "required": false,
+      "description": "Seconds before it starts."
+    },
+    {
+      "name": "distance",
+      "type": "number",
+      "default": 16,
+      "required": false,
+      "description": "Rise distance in pixels; negative values drop in from above instead."
+    },
+    {
+      "name": "threshold",
+      "type": "number",
+      "default": 0.15,
+      "required": false,
+      "description": "Fraction of the element that must be visible before it fires."
+    },
+    {
+      "name": "rootMargin",
+      "type": "string",
+      "default": "0px",
+      "required": false,
+      "description": "Shifts the trigger line; a negative bottom margin fires later."
+    },
+    {
+      "name": "stagger",
+      "type": "number",
+      "default": 0,
+      "required": false,
+      "description": "Seconds between direct children. 0 animates the wrapper as one block."
+    },
+    {
+      "name": "repeat",
+      "type": "boolean",
+      "default": false,
+      "required": false,
+      "description": "Replay on every re-entry instead of latching after the first."
+    }
+  ],
+  "dependencies": {
+    "npm": [
+      "motion"
+    ],
+    "peer": [
+      "react"
+    ],
+    "registry": [
+      6
+    ]
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/5.json"
+}

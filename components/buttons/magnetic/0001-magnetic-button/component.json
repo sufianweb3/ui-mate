@@ -1,0 +1,84 @@
+{
+  "id": 1,
+  "number": "0001",
+  "name": "Magnetic Button",
+  "slug": "magnetic-button",
+  "category": "buttons",
+  "subcategory": "magnetic",
+  "group": null,
+  "tags": [
+    "magnetic",
+    "pointer",
+    "spring",
+    "minimal"
+  ],
+  "description": "A button that leans toward the cursor with a distance-falloff pull, its label travelling a further fraction so the two arrive at different rates.",
+  "props": [
+    {
+      "name": "strength",
+      "type": "number",
+      "default": 18,
+      "required": false,
+      "description": "Maximum travel toward the cursor in pixels, reached only at dead centre."
+    },
+    {
+      "name": "radius",
+      "type": "number",
+      "default": 90,
+      "required": false,
+      "description": "Capture distance in pixels; outside it the button does not react at all."
+    },
+    {
+      "name": "labelFactor",
+      "type": "number",
+      "default": 0.35,
+      "required": false,
+      "description": "Extra travel applied to the label on top of the button's own, as a fraction."
+    },
+    {
+      "name": "stiffness",
+      "type": "number",
+      "default": 300,
+      "required": false,
+      "description": "Spring stiffness for both the follow and the release."
+    },
+    {
+      "name": "damping",
+      "type": "number",
+      "default": 40,
+      "required": false,
+      "description": "Spring damping; below about 25 the release visibly overshoots."
+    },
+    {
+      "name": "mass",
+      "type": "number",
+      "default": 0.4,
+      "required": false,
+      "description": "Spring mass. Higher values feel heavier and arrive later."
+    },
+    {
+      "name": "variant",
+      "type": "\"solid\" | \"outline\" | \"ghost\"",
+      "default": "solid",
+      "required": false,
+      "description": "Visual weight, from filled accent down to type only."
+    },
+    {
+      "name": "size",
+      "type": "\"sm\" | \"md\" | \"lg\"",
+      "default": "md",
+      "required": false,
+      "description": "Height, horizontal padding and type size together."
+    }
+  ],
+  "dependencies": {
+    "npm": [
+      "motion"
+    ],
+    "peer": [
+      "react"
+    ],
+    "registry": []
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/1.json"
+}

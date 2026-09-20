@@ -1,0 +1,88 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "spotlight-card",
+  "type": "registry:ui",
+  "title": "Spotlight Card",
+  "description": "Pointer-tracked radial highlight inside the card with a masked border glow sharing the same origin, driven entirely through CSS custom properties so moving the pointer never re-renders.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/spotlight-card.tsx",
+      "target": "components/ui/spotlight-card.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\";\n\nimport { forwardRef, useCallback, useRef, type HTMLAttributes } from \"react\";\nimport { useReducedMotion } from \"motion/react\";\nimport { cn } from \"@/lib/cn\";\n\nexport interface SpotlightCardProps extends HTMLAttributes<HTMLDivElement> {\n  /** Radius of the highlight in pixels. */\n  size?: number;\n  /** Peak opacity of the interior highlight, 0 to 1. */\n  intensity?: number;\n  /** Peak opacity of the matching border glow, 0 to 1. Set 0 for interior only. */\n  borderIntensity?: number;\n  /** Token the light is made from. */\n  color?: string;\n  /** Seconds the highlight takes to fade in on enter and out on leave. */\n  fade?: number;\n}\n\n/**\n * A radial highlight inside the card tracking the pointer, with a matching glow on the\n * border picked out by a mask. The interior light and the edge light share one origin,\n * which is what makes the card read as lit rather than as a card with a gradient on it.\n *\n * Position is written to CSS custom properties rather than React state, so moving the\n * pointer never re-renders. That is the whole reason this stays cheap with a grid of\n * twenty cards on screen.\n */\nexport const SpotlightCard = forwardRef<HTMLDivElement, SpotlightCardProps>(\n  function SpotlightCard(\n    {\n      size = 320,\n      intensity = 0.1,\n      borderIntensity = 0.55,\n      color = \"--ui-accent\",\n      fade = 0.3,\n      className,\n      style,\n      children,\n      ...rest\n    },\n    forwardedRef,\n  ) {\n    const localRef = useRef<HTMLDivElement | null>(null);\n    // The light itself is not motion, but its fade is. Reduced motion keeps the\n    // spotlight and makes it appear instantly rather than removing the feedback.\n    const prefersReduced = useReducedMotion();\n    const effectiveFade = prefersReduced ? 0 : fade;\n\n    const setRefs = useCallback(\n      (node: HTMLDivElement | null) => {\n        localRef.current = node;\n        if (typeof forwardedRef === \"function\") forwardedRef(node);\n        else if (forwardedRef) forwardedRef.current = node;\n      },\n      [forwardedRef],\n    );\n\n    const onPointerMove = useCallback(\n      (event: React.PointerEvent<HTMLDivElement>) => {\n        const el = localRef.current;\n        if (!el) return;\n        const box = el.getBoundingClientRect();\n        // Custom properties, not state: no re-render on pointer move.\n        el.style.setProperty(\"--spot-x\", `${event.clientX - box.left}px`);\n        el.style.setProperty(\"--spot-y\", `${event.clientY - box.top}px`);\n        el.style.setProperty(\"--spot-on\", \"1\");\n      },\n      [],\n    );\n\n    const onPointerLeave = useCallback(() => {\n      localRef.current?.style.setProperty(\"--spot-on\", \"0\");\n    }, []);\n\n    const light = `radial-gradient(var(--spot-size) circle at var(--spot-x) var(--spot-y), var(${color}, currentColor), transparent 70%)`;\n\n    return (\n      <div\n        ref={setRefs}\n        onPointerMove={onPointerMove}\n        onPointerLeave={onPointerLeave}\n        className={cn(\"group relative overflow-hidden\", className)}\n        style={\n          {\n            \"--spot-x\": \"50%\",\n            \"--spot-y\": \"50%\",\n            \"--spot-on\": \"0\",\n            \"--spot-size\": `${size}px`,\n            \"--spot-fade\": `${effectiveFade}s`,\n            background: \"var(--ui-bg-elevated, transparent)\",\n            color: \"var(--ui-fg, currentColor)\",\n            border: \"1px solid var(--ui-border, currentColor)\",\n            borderRadius: \"var(--ui-radius, 1rem)\",\n            ...style,\n          } as React.CSSProperties\n        }\n        {...rest}\n      >\n        {/* The border glow: the same light, masked to the 1px edge only. */}\n        <div\n          aria-hidden=\"true\"\n          className=\"pointer-events-none absolute -inset-px\"\n          style={{\n            borderRadius: \"inherit\",\n            padding: 1,\n            background: light,\n            opacity: `calc(var(--spot-on) * ${borderIntensity})`,\n            transition: `opacity var(--spot-fade) ease`,\n            WebkitMask:\n              \"linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0)\",\n            mask: \"linear-gradient(currentColor 0 0) content-box exclude, linear-gradient(currentColor 0 0)\",\n          }}\n        />\n\n        {/* The interior light, well below the border's opacity so text stays legible. */}\n        <div\n          aria-hidden=\"true\"\n          className=\"pointer-events-none absolute inset-0\"\n          style={{\n            borderRadius: \"inherit\",\n            background: light,\n            opacity: `calc(var(--spot-on) * ${intensity})`,\n            transition: `opacity var(--spot-fade) ease`,\n          }}\n        />\n\n        <div className=\"relative\">{children}</div>\n      </div>\n    );\n  },\n);\n\nSpotlightCard.displayName = \"SpotlightCard\";\n\nexport default SpotlightCard;\n"
+    }
+  ],
+  "meta": {
+    "id": 4,
+    "number": "0004",
+    "level": "component",
+    "category": "cards",
+    "subcategory": "spotlight",
+    "group": null,
+    "tags": [
+      "pointer",
+      "glow",
+      "hover",
+      "css"
+    ],
+    "complexity": "low",
+    "tokens": [
+      "--ui-accent",
+      "--ui-bg-elevated",
+      "--ui-fg",
+      "--ui-border",
+      "--ui-radius"
+    ],
+    "variants": [],
+    "props": [
+      {
+        "name": "size",
+        "type": "number",
+        "default": 320,
+        "required": false,
+        "description": "Radius of the highlight in pixels; scale it with the card, not the page."
+      },
+      {
+        "name": "intensity",
+        "type": "number",
+        "default": 0.1,
+        "required": false,
+        "description": "Peak opacity of the interior light. Above 0.2 it starts fighting body text."
+      },
+      {
+        "name": "borderIntensity",
+        "type": "number",
+        "default": 0.55,
+        "required": false,
+        "description": "Peak opacity of the border glow. Set 0 for an interior-only light."
+      },
+      {
+        "name": "color",
+        "type": "string",
+        "default": "--ui-accent",
+        "required": false,
+        "description": "Token the light is made from."
+      },
+      {
+        "name": "fade",
+        "type": "number",
+        "default": 0.3,
+        "required": false,
+        "description": "Seconds to fade in on enter and out on leave; forced to 0 under reduced motion."
+      }
+    ],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": false
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/4.json",
+    "demo": "import { SpotlightCard } from \"./index\";\n\nconst plans = [\n  {\n    name: \"Survey\",\n    price: \"£4,800\",\n    note: \"Two weeks\",\n    lines: [\n      \"Audit of the current stack\",\n      \"Findings deck\",\n      \"Costed recommendation\",\n    ],\n  },\n  {\n    name: \"Rebuild\",\n    price: \"£26,000\",\n    note: \"Six to eight weeks\",\n    lines: [\n      \"Design system\",\n      \"Reporting surface\",\n      \"Migration of live data\",\n      \"Team handover\",\n    ],\n  },\n  {\n    name: \"Retainer\",\n    price: \"£3,200/mo\",\n    note: \"Rolling, 30 days notice\",\n    lines: [\"Ongoing changes\", \"Same-day triage\", \"Quarterly review\"],\n  },\n];\n\nexport default function Demo() {\n  return (\n    <div\n      className=\"w-full p-10\"\n      style={{\n        background: \"var(--ui-bg, transparent)\",\n        color: \"var(--ui-fg, currentColor)\",\n      }}\n    >\n      <div className=\"mx-auto grid max-w-5xl gap-5 sm:grid-cols-3\">\n        {plans.map((plan) => (\n          <SpotlightCard key={plan.name} className=\"p-7\">\n            <p\n              className=\"font-mono text-xs\"\n              style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n            >\n              {plan.name}\n            </p>\n            <p className=\"mt-5 text-3xl font-medium tracking-tight\">\n              {plan.price}\n            </p>\n            <p\n              className=\"mt-1 text-sm\"\n              style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n            >\n              {plan.note}\n            </p>\n            <ul className=\"mt-6 space-y-2 text-sm\">\n              {plan.lines.map((line) => (\n                <li key={line} className=\"flex gap-2\">\n                  <span\n                    aria-hidden=\"true\"\n                    style={{ color: \"var(--ui-accent, currentColor)\" }}\n                  >\n                    —\n                  </span>\n                  {line}\n                </li>\n              ))}\n            </ul>\n          </SpotlightCard>\n        ))}\n      </div>\n\n      <div className=\"mx-auto mt-5 grid max-w-5xl gap-5 sm:grid-cols-2\">\n        {/* Border only: the interior stays flat, which suits a card with an image in it. */}\n        <SpotlightCard\n          intensity={0}\n          borderIntensity={0.9}\n          size={220}\n          className=\"p-7\"\n        >\n          <p className=\"text-sm\">Edge light only — interior left flat.</p>\n        </SpotlightCard>\n        {/* A wide, soft, slow light for a single large feature panel. */}\n        <SpotlightCard\n          size={620}\n          intensity={0.16}\n          borderIntensity={0.3}\n          fade={0.7}\n          className=\"p-7\"\n        >\n          <p className=\"text-sm\">Wide soft light, slower fade.</p>\n        </SpotlightCard>\n      </div>\n    </div>\n  );\n}\n",
+    "path": "cards/spotlight/0004-spotlight-card"
+  }
+}

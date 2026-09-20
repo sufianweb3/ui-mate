@@ -29,6 +29,8 @@ export interface MagneticButtonProps extends Omit<
   stiffness?: number;
   /** Spring damping. Lower overshoots on release. */
   damping?: number;
+  /** Spring mass. Higher feels heavier and arrives later. */
+  mass?: number;
   /** Visual weight. */
   variant?: "solid" | "outline" | "ghost";
   /** Height, padding and type size together. */
@@ -61,6 +63,7 @@ export const MagneticButton = forwardRef<
     labelFactor = 0.35,
     stiffness = 300,
     damping = 40,
+    mass = 0.4,
     variant = "solid",
     size = "md",
     className,
@@ -74,7 +77,7 @@ export const MagneticButton = forwardRef<
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springConfig = { stiffness, damping, mass: 0.4 };
+  const springConfig = { stiffness, damping, mass };
   const sx = useSpring(x, springConfig);
   const sy = useSpring(y, springConfig);
 

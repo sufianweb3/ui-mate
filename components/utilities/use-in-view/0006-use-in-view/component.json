@@ -1,0 +1,52 @@
+{
+  "id": 6,
+  "number": "0006",
+  "name": "Use In View",
+  "slug": "use-in-view",
+  "category": "utilities",
+  "subcategory": "use-in-view",
+  "group": null,
+  "tags": [
+    "in-view",
+    "scroll"
+  ],
+  "description": "IntersectionObserver as a hook returning a ref and a boolean, defaulting to fire once and reporting true when the observer is unavailable so content is never stranded.",
+  "props": [
+    {
+      "name": "threshold",
+      "type": "number",
+      "default": 0.2,
+      "required": false,
+      "description": "Fraction of the element that must be visible before it counts as in view."
+    },
+    {
+      "name": "rootMargin",
+      "type": "string",
+      "default": "0px",
+      "required": false,
+      "description": "CSS margin grown around the root bounds; negative values delay the trigger."
+    },
+    {
+      "name": "once",
+      "type": "boolean",
+      "default": true,
+      "required": false,
+      "description": "Disconnect after the first entry. Set false to have the boolean flip both ways."
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": false,
+      "required": false,
+      "description": "Skip observing and report true at once — what reduced-motion branches pass in."
+    }
+  ],
+  "dependencies": {
+    "npm": [],
+    "peer": [
+      "react"
+    ],
+    "registry": []
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/6.json"
+}

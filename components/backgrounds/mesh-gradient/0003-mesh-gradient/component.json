@@ -1,0 +1,84 @@
+{
+  "id": 3,
+  "number": "0003",
+  "name": "Mesh Gradient",
+  "slug": "mesh-gradient",
+  "category": "backgrounds",
+  "subcategory": "mesh-gradient",
+  "group": null,
+  "tags": [
+    "gradient",
+    "animated",
+    "canvas",
+    "ambient",
+    "background"
+  ],
+  "description": "Multi-point blended color field on canvas where each point orbits its own anchor on its own period, so the drift has no visible loop length and no discrete shape edges.",
+  "props": [
+    {
+      "name": "colors",
+      "type": "string[]",
+      "default": [
+        "--ui-accent",
+        "--ui-bg-subtle",
+        "--ui-muted"
+      ],
+      "required": false,
+      "description": "Token names sampled for the blend points; three to five reads best."
+    },
+    {
+      "name": "points",
+      "type": "number",
+      "default": 5,
+      "required": false,
+      "description": "Number of blend points. Above six the field turns to mud at any size."
+    },
+    {
+      "name": "speed",
+      "type": "number",
+      "default": 0.4,
+      "required": false,
+      "description": "Drift rate. 0 draws one static frame and never schedules a loop."
+    },
+    {
+      "name": "blur",
+      "type": "number",
+      "default": 0.18,
+      "required": false,
+      "description": "Blur radius as a fraction of 100px; this is what removes the circle edges."
+    },
+    {
+      "name": "grain",
+      "type": "number",
+      "default": 0.035,
+      "required": false,
+      "description": "Opacity of the noise overlay that stops the blend banding. 0 removes it."
+    },
+    {
+      "name": "seed",
+      "type": "number",
+      "default": 7,
+      "required": false,
+      "description": "Deterministic layout — the same seed always gives the same arrangement."
+    },
+    {
+      "name": "resolution",
+      "type": "number",
+      "default": 0.6,
+      "required": false,
+      "description": "Backing store scale. 1 is sharp and costly; 0.6 is invisible behind the blur."
+    }
+  ],
+  "dependencies": {
+    "npm": [
+      "motion"
+    ],
+    "peer": [
+      "react"
+    ],
+    "registry": [
+      6
+    ]
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/3.json"
+}

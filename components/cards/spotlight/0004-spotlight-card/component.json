@@ -1,0 +1,63 @@
+{
+  "id": 4,
+  "number": "0004",
+  "name": "Spotlight Card",
+  "slug": "spotlight-card",
+  "category": "cards",
+  "subcategory": "spotlight",
+  "group": null,
+  "tags": [
+    "pointer",
+    "glow",
+    "hover",
+    "css"
+  ],
+  "description": "Pointer-tracked radial highlight inside the card with a masked border glow sharing the same origin, driven entirely through CSS custom properties so moving the pointer never re-renders.",
+  "props": [
+    {
+      "name": "size",
+      "type": "number",
+      "default": 320,
+      "required": false,
+      "description": "Radius of the highlight in pixels; scale it with the card, not the page."
+    },
+    {
+      "name": "intensity",
+      "type": "number",
+      "default": 0.1,
+      "required": false,
+      "description": "Peak opacity of the interior light. Above 0.2 it starts fighting body text."
+    },
+    {
+      "name": "borderIntensity",
+      "type": "number",
+      "default": 0.55,
+      "required": false,
+      "description": "Peak opacity of the border glow. Set 0 for an interior-only light."
+    },
+    {
+      "name": "color",
+      "type": "string",
+      "default": "--ui-accent",
+      "required": false,
+      "description": "Token the light is made from."
+    },
+    {
+      "name": "fade",
+      "type": "number",
+      "default": 0.3,
+      "required": false,
+      "description": "Seconds to fade in on enter and out on leave; forced to 0 under reduced motion."
+    }
+  ],
+  "dependencies": {
+    "npm": [
+      "motion"
+    ],
+    "peer": [
+      "react"
+    ],
+    "registry": []
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/4.json"
+}

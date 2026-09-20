@@ -1,0 +1,91 @@
+{
+  "id": 2,
+  "number": "0002",
+  "name": "Split Reveal",
+  "slug": "split-reveal",
+  "category": "typography",
+  "subcategory": "text-reveal",
+  "group": null,
+  "tags": [
+    "typography",
+    "reveal",
+    "mask",
+    "in-view",
+    "stagger"
+  ],
+  "description": "Text wiped into place from behind a per-piece mask on entering view, at character, word or authored-line granularity, with the full string kept as a single accessible label.",
+  "props": [
+    {
+      "name": "text",
+      "type": "string",
+      "required": true,
+      "description": "The string to reveal. Plain text, so it can be split without walking children."
+    },
+    {
+      "name": "split",
+      "type": "\"character\" | \"word\" | \"line\"",
+      "default": "character",
+      "required": false,
+      "description": "What gets its own mask. Lines split on authored newlines, not measured wraps."
+    },
+    {
+      "name": "as",
+      "type": "ElementType",
+      "default": "span",
+      "required": false,
+      "description": "Root element, so the heading level matches the document outline."
+    },
+    {
+      "name": "duration",
+      "type": "number",
+      "default": 0.8,
+      "required": false,
+      "description": "Seconds each piece takes to clear its mask."
+    },
+    {
+      "name": "stagger",
+      "type": "number",
+      "default": 0.03,
+      "required": false,
+      "description": "Seconds between consecutive pieces starting."
+    },
+    {
+      "name": "delay",
+      "type": "number",
+      "default": 0,
+      "required": false,
+      "description": "Seconds before the first piece moves."
+    },
+    {
+      "name": "distance",
+      "type": "number",
+      "default": 110,
+      "required": false,
+      "description": "How far below the mask each piece starts, as a percentage of its own height."
+    },
+    {
+      "name": "threshold",
+      "type": "number",
+      "default": 0.4,
+      "required": false,
+      "description": "Fraction of the element that must be visible before it starts."
+    },
+    {
+      "name": "repeat",
+      "type": "boolean",
+      "default": false,
+      "required": false,
+      "description": "Replay on every re-entry instead of only the first."
+    }
+  ],
+  "dependencies": {
+    "npm": [
+      "motion"
+    ],
+    "peer": [
+      "react"
+    ],
+    "registry": []
+  },
+  "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/2.json"
+}

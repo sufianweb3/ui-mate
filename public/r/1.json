@@ -1,0 +1,114 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "magnetic-button",
+  "type": "registry:ui",
+  "title": "Magnetic Button",
+  "description": "A button that leans toward the cursor with a distance-falloff pull, its label travelling a further fraction so the two arrive at different rates.",
+  "dependencies": [
+    "motion"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "components/ui/magnetic-button.tsx",
+      "target": "components/ui/magnetic-button.tsx",
+      "type": "registry:ui",
+      "content": "\"use client\";\n\nimport {\n  forwardRef,\n  useCallback,\n  useRef,\n  type ButtonHTMLAttributes,\n} from \"react\";\nimport {\n  motion,\n  useMotionValue,\n  useSpring,\n  useTransform,\n  useReducedMotion,\n} from \"motion/react\";\nimport { cn } from \"@/lib/cn\";\n\nexport interface MagneticButtonProps extends Omit<\n  ButtonHTMLAttributes<HTMLButtonElement>,\n  \"onDrag\" | \"onDragStart\" | \"onDragEnd\" | \"onAnimationStart\" | \"onAnimationEnd\"\n> {\n  /** How far the button may travel toward the cursor, in pixels. */\n  strength?: number;\n  /** Capture distance around the button, in pixels. Outside this it does not react. */\n  radius?: number;\n  /** How far the label travels on top of the button. 0 keeps it centred. */\n  labelFactor?: number;\n  /** Spring stiffness of the follow and the release. */\n  stiffness?: number;\n  /** Spring damping. Lower overshoots on release. */\n  damping?: number;\n  /** Spring mass. Higher feels heavier and arrives later. */\n  mass?: number;\n  /** Visual weight. */\n  variant?: \"solid\" | \"outline\" | \"ghost\";\n  /** Height, padding and type size together. */\n  size?: \"sm\" | \"md\" | \"lg\";\n}\n\nconst SIZES = {\n  sm: \"h-9 px-4 text-sm\",\n  md: \"h-11 px-6 text-[0.9375rem]\",\n  lg: \"h-14 px-9 text-base\",\n} as const;\n\n/**\n * A button that leans toward the cursor within a capture radius and springs back on\n * leave. The label travels a further fraction on top of the button's own movement, so\n * the two arrive at different rates — that lag is what reads as weight and is what\n * separates this from a plain translate.\n *\n * The pull falls off with distance, so it is strongest dead centre and zero at the\n * edge of the radius rather than snapping on. Coarse pointers and reduced motion skip\n * the effect entirely and get an ordinary button.\n */\nexport const MagneticButton = forwardRef<\n  HTMLButtonElement,\n  MagneticButtonProps\n>(function MagneticButton(\n  {\n    strength = 18,\n    radius = 90,\n    labelFactor = 0.35,\n    stiffness = 300,\n    damping = 40,\n    mass = 0.4,\n    variant = \"solid\",\n    size = \"md\",\n    className,\n    children,\n    ...rest\n  },\n  forwardedRef,\n) {\n  const localRef = useRef<HTMLButtonElement | null>(null);\n  const prefersReduced = useReducedMotion();\n\n  const x = useMotionValue(0);\n  const y = useMotionValue(0);\n  const springConfig = { stiffness, damping, mass };\n  const sx = useSpring(x, springConfig);\n  const sy = useSpring(y, springConfig);\n\n  // Derived, not a second spring: the label is always a fixed fraction ahead.\n  const labelX = useTransform(sx, (v) => v * labelFactor);\n  const labelY = useTransform(sy, (v) => v * labelFactor);\n\n  const setRefs = useCallback(\n    (node: HTMLButtonElement | null) => {\n      localRef.current = node;\n      if (typeof forwardedRef === \"function\") forwardedRef(node);\n      else if (forwardedRef) forwardedRef.current = node;\n    },\n    [forwardedRef],\n  );\n\n  const onPointerMove = useCallback(\n    (event: React.PointerEvent<HTMLButtonElement>) => {\n      // A coarse pointer has no hover state, so there is nothing to lean toward.\n      if (prefersReduced || event.pointerType !== \"mouse\") return;\n      const el = localRef.current;\n      if (!el) return;\n\n      const box = el.getBoundingClientRect();\n      const dx = event.clientX - (box.left + box.width / 2);\n      const dy = event.clientY - (box.top + box.height / 2);\n      const distance = Math.hypot(dx, dy);\n\n      if (distance > radius) {\n        x.set(0);\n        y.set(0);\n        return;\n      }\n\n      const pull = (1 - distance / radius) * strength;\n      x.set((dx / (distance || 1)) * pull);\n      y.set((dy / (distance || 1)) * pull);\n    },\n    [prefersReduced, radius, strength, x, y],\n  );\n\n  // Blur matters as much as pointer leave: a keyboard user tabbing away must not\n  // leave the button parked off-centre.\n  const release = useCallback(() => {\n    x.set(0);\n    y.set(0);\n  }, [x, y]);\n\n  const surface =\n    variant === \"solid\"\n      ? {\n          background: \"var(--ui-accent, currentColor)\",\n          color: \"var(--ui-accent-fg, canvas)\",\n          borderColor: \"transparent\",\n        }\n      : variant === \"outline\"\n        ? {\n            background: \"transparent\",\n            color: \"var(--ui-fg, currentColor)\",\n            borderColor: \"var(--ui-border, currentColor)\",\n          }\n        : {\n            background: \"transparent\",\n            color: \"var(--ui-fg, currentColor)\",\n            borderColor: \"transparent\",\n          };\n\n  return (\n    <motion.button\n      ref={setRefs}\n      type=\"button\"\n      onPointerMove={onPointerMove}\n      onPointerLeave={release}\n      onBlur={release}\n      style={{\n        x: prefersReduced ? 0 : sx,\n        y: prefersReduced ? 0 : sy,\n        borderRadius: \"var(--ui-radius, 9999px)\",\n        borderWidth: 1,\n        borderStyle: \"solid\",\n        outlineColor: \"var(--ui-ring, currentColor)\",\n        ...surface,\n      }}\n      className={cn(\n        \"relative inline-flex select-none items-center justify-center font-medium\",\n        \"outline-offset-2 focus-visible:outline focus-visible:outline-2\",\n        \"disabled:pointer-events-none disabled:opacity-50\",\n        SIZES[size],\n        className,\n      )}\n      {...rest}\n    >\n      <motion.span\n        className=\"pointer-events-none\"\n        style={{\n          x: prefersReduced ? 0 : labelX,\n          y: prefersReduced ? 0 : labelY,\n        }}\n      >\n        {children}\n      </motion.span>\n    </motion.button>\n  );\n});\n\nMagneticButton.displayName = \"MagneticButton\";\n\nexport default MagneticButton;\n"
+    }
+  ],
+  "meta": {
+    "id": 1,
+    "number": "0001",
+    "level": "component",
+    "category": "buttons",
+    "subcategory": "magnetic",
+    "group": null,
+    "tags": [
+      "magnetic",
+      "pointer",
+      "spring",
+      "minimal"
+    ],
+    "complexity": "medium",
+    "tokens": [
+      "--ui-accent",
+      "--ui-accent-fg",
+      "--ui-fg",
+      "--ui-border",
+      "--ui-radius",
+      "--ui-ring"
+    ],
+    "variants": [
+      "solid",
+      "outline",
+      "ghost"
+    ],
+    "props": [
+      {
+        "name": "strength",
+        "type": "number",
+        "default": 18,
+        "required": false,
+        "description": "Maximum travel toward the cursor in pixels, reached only at dead centre."
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "default": 90,
+        "required": false,
+        "description": "Capture distance in pixels; outside it the button does not react at all."
+      },
+      {
+        "name": "labelFactor",
+        "type": "number",
+        "default": 0.35,
+        "required": false,
+        "description": "Extra travel applied to the label on top of the button's own, as a fraction."
+      },
+      {
+        "name": "stiffness",
+        "type": "number",
+        "default": 300,
+        "required": false,
+        "description": "Spring stiffness for both the follow and the release."
+      },
+      {
+        "name": "damping",
+        "type": "number",
+        "default": 40,
+        "required": false,
+        "description": "Spring damping; below about 25 the release visibly overshoots."
+      },
+      {
+        "name": "mass",
+        "type": "number",
+        "default": 0.4,
+        "required": false,
+        "description": "Spring mass. Higher values feel heavier and arrive later."
+      },
+      {
+        "name": "variant",
+        "type": "\"solid\" | \"outline\" | \"ghost\"",
+        "default": "solid",
+        "required": false,
+        "description": "Visual weight, from filled accent down to type only."
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "default": "md",
+        "required": false,
+        "description": "Height, horizontal padding and type size together."
+      }
+    ],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": false
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/1.json",
+    "demo": "import { MagneticButton } from \"./index\";\n\nexport default function Demo() {\n  return (\n    <div\n      className=\"flex min-h-[420px] w-full flex-col items-center justify-center gap-12 p-12\"\n      style={{\n        background: \"var(--ui-bg, transparent)\",\n        color: \"var(--ui-fg, currentColor)\",\n      }}\n    >\n      <div className=\"flex flex-wrap items-center justify-center gap-6\">\n        <MagneticButton size=\"lg\">Start a project</MagneticButton>\n        <MagneticButton variant=\"outline\" size=\"lg\">\n          See the work\n        </MagneticButton>\n        <MagneticButton variant=\"ghost\" size=\"lg\">\n          Read the brief\n        </MagneticButton>\n      </div>\n\n      <div className=\"flex flex-wrap items-center justify-center gap-6\">\n        {/* A wider radius and a longer throw: the difference is worth feeling side by side. */}\n        <MagneticButton strength={34} radius={160} labelFactor={0.5}>\n          Heavier pull\n        </MagneticButton>\n        <MagneticButton\n          strength={8}\n          radius={60}\n          labelFactor={0.15}\n          damping={28}\n        >\n          Barely there\n        </MagneticButton>\n        <MagneticButton disabled>Unavailable</MagneticButton>\n      </div>\n\n      <p\n        className=\"max-w-sm text-center text-sm\"\n        style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n      >\n        Tab to a button and the focus ring appears without any movement. Blur\n        returns it to centre.\n      </p>\n    </div>\n  );\n}\n",
+    "path": "buttons/magnetic/0001-magnetic-button"
+  }
+}

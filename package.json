@@ -1,0 +1,21 @@
+{
+  "name": "ui-mate",
+  "version": "0.1.0",
+  "private": true,
+  "description": "6 React components with permanent numbers, installable through the shadcn CLI.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sufianweb3/ui-mate.git"
+  },
+  "homepage": "https://ui-mate.pages.dev",
+  "keywords": [
+    "react",
+    "components",
+    "ui",
+    "shadcn",
+    "registry",
+    "tailwind",
+    "motion"
+  ]
+}

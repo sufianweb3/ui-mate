@@ -1,0 +1,14 @@
+# ui-mate
+
+React components with permanent numbers. Install any of them with:
+npx shadcn@latest add https://ui-mate.pages.dev/r/<number>.json
+
+Full machine-readable index: https://ui-mate.pages.dev/r/index.json
+Format below: number | name | category/subcategory | tags | description | registry url
+
+#0001 | Magnetic Button | buttons/magnetic | magnetic,pointer,spring,minimal | A button that leans toward the cursor with a distance-falloff pull, its label travelling a further fraction so the two arrive at different rates. | https://ui-mate.pages.dev/r/1.json
+#0002 | Split Reveal | typography/text-reveal | typography,reveal,mask,in-view,stagger | Text wiped into place from behind a per-piece mask on entering view, at character, word or authored-line granularity, with the full string kept as a single accessible label. | https://ui-mate.pages.dev/r/2.json
+#0003 | Mesh Gradient | backgrounds/mesh-gradient | gradient,animated,canvas,ambient,background | Multi-point blended color field on canvas where each point orbits its own anchor on its own period, so the drift has no visible loop length and no discrete shape edges. | https://ui-mate.pages.dev/r/3.json
+#0004 | Spotlight Card | cards/spotlight | pointer,glow,hover,css | Pointer-tracked radial highlight inside the card with a masked border glow sharing the same origin, driven entirely through CSS custom properties so moving the pointer never re-renders. | https://ui-mate.pages.dev/r/4.json
+#0005 | Fade In | scroll/reveal | in-view,reveal,stagger,animated | The generic in-view wrapper: fades and rises its content once on entering the viewport, adding no markup of its own, and with stagger set it sequences direct children by merging style onto them rather than wrapping them. | https://ui-mate.pages.dev/r/5.json
+#0006 | Use In View | utilities/use-in-view | in-view,scroll | IntersectionObserver as a hook returning a ref and a boolean, defaulting to fire once and reporting true when the observer is unavailable so content is never stranded. | https://ui-mate.pages.dev/r/6.json

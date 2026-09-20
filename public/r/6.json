@@ -1,0 +1,71 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "use-in-view",
+  "type": "registry:hook",
+  "title": "Use In View",
+  "description": "IntersectionObserver as a hook returning a ref and a boolean, defaulting to fire once and reporting true when the observer is unavailable so content is never stranded.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "lib/use-in-view.ts",
+      "target": "lib/use-in-view.ts",
+      "type": "registry:hook",
+      "content": "\"use client\";\n\nimport { useEffect, useRef, useState, type RefObject } from \"react\";\n\nexport interface UseInViewProps {\n  /** 0 to 1. How much of the element must be visible before it counts as in view. */\n  threshold?: number;\n  /** CSS margin shorthand grown around the root bounds. Negative values fire later. */\n  rootMargin?: string;\n  /** Stop observing after the first entry. The default, because reveals run once. */\n  once?: boolean;\n  /**\n   * Skip observing and report true immediately. Reveals pass their reduced-motion\n   * flag here so content appears at once instead of waiting for a scroll.\n   */\n  disabled?: boolean;\n}\n\nexport type UseInViewOptions = UseInViewProps;\n\n/**\n * IntersectionObserver as a hook, returning a ref to attach and a boolean.\n *\n * Reports `true` when IntersectionObserver is unavailable rather than `false`, so a\n * reveal built on it can never leave content permanently invisible in an environment\n * that cannot observe — the failure mode is \"shown early\", never \"never shown\".\n */\nexport function useInView<T extends Element = HTMLDivElement>({\n  threshold = 0.2,\n  rootMargin = \"0px\",\n  once = true,\n  disabled = false,\n}: UseInViewProps = {}): [RefObject<T | null>, boolean] {\n  const ref = useRef<T | null>(null);\n  const [inView, setInView] = useState(false);\n\n  useEffect(() => {\n    if (disabled) {\n      setInView(true);\n      return;\n    }\n    const el = ref.current;\n    if (!el) return;\n    if (typeof IntersectionObserver === \"undefined\") {\n      setInView(true);\n      return;\n    }\n\n    const observer = new IntersectionObserver(\n      (entries) => {\n        const entry = entries[0];\n        if (!entry) return;\n        if (entry.isIntersecting) {\n          setInView(true);\n          if (once) observer.disconnect();\n        } else if (!once) {\n          setInView(false);\n        }\n      },\n      { threshold, rootMargin },\n    );\n\n    observer.observe(el);\n    return () => observer.disconnect();\n  }, [threshold, rootMargin, once, disabled]);\n\n  return [ref, inView];\n}\n\nexport default useInView;\n"
+    }
+  ],
+  "meta": {
+    "id": 6,
+    "number": "0006",
+    "level": "system",
+    "category": "utilities",
+    "subcategory": "use-in-view",
+    "group": null,
+    "tags": [
+      "in-view",
+      "scroll"
+    ],
+    "complexity": "low",
+    "tokens": [],
+    "variants": [],
+    "props": [
+      {
+        "name": "threshold",
+        "type": "number",
+        "default": 0.2,
+        "required": false,
+        "description": "Fraction of the element that must be visible before it counts as in view."
+      },
+      {
+        "name": "rootMargin",
+        "type": "string",
+        "default": "0px",
+        "required": false,
+        "description": "CSS margin grown around the root bounds; negative values delay the trigger."
+      },
+      {
+        "name": "once",
+        "type": "boolean",
+        "default": true,
+        "required": false,
+        "description": "Disconnect after the first entry. Set false to have the boolean flip both ways."
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "default": false,
+        "required": false,
+        "description": "Skip observing and report true at once — what reduced-motion branches pass in."
+      }
+    ],
+    "capabilities": {
+      "responsive": true,
+      "darkMode": true,
+      "reducedMotion": true,
+      "rsc": false
+    },
+    "install": "npx shadcn@latest add https://ui-mate.pages.dev/r/6.json",
+    "demo": "\"use client\";\n\nimport { useInView } from \"./index\";\n\nfunction Watched({ label, threshold }: { label: string; threshold: number }) {\n  const [ref, inView] = useInView<HTMLDivElement>({ threshold, once: false });\n\n  return (\n    <div\n      ref={ref}\n      className=\"flex h-40 items-center justify-between rounded-xl border px-5\"\n      style={{\n        borderColor: \"var(--ui-border, currentColor)\",\n        background: \"var(--ui-bg-subtle, transparent)\",\n        color: \"var(--ui-fg, currentColor)\",\n      }}\n    >\n      <span className=\"text-sm\">{label}</span>\n      <span\n        className=\"rounded-full px-3 py-1 font-mono text-xs\"\n        style={{\n          background: inView\n            ? \"var(--ui-accent, currentColor)\"\n            : \"var(--ui-muted, transparent)\",\n          color: inView\n            ? \"var(--ui-accent-fg, inherit)\"\n            : \"var(--ui-fg-muted, inherit)\",\n        }}\n      >\n        {inView ? \"in view\" : \"out of view\"}\n      </span>\n    </div>\n  );\n}\n\nexport default function Demo() {\n  return (\n    <div className=\"mx-auto w-full max-w-md space-y-4 p-8\">\n      <p\n        className=\"text-sm\"\n        style={{ color: \"var(--ui-fg-muted, currentColor)\" }}\n      >\n        Scroll the panel. Each box reports its own visibility; `once: false` is\n        set here so the state flips both ways.\n      </p>\n      <div className=\"h-[420px] space-y-6 overflow-y-auto pr-2\">\n        <div className=\"h-48\" />\n        <Watched label=\"threshold 0.2 — fires early\" threshold={0.2} />\n        <Watched\n          label=\"threshold 0.9 — needs to be almost fully visible\"\n          threshold={0.9}\n        />\n        <div className=\"h-48\" />\n      </div>\n    </div>\n  );\n}\n",
+    "path": "utilities/use-in-view/0006-use-in-view"
+  }
+}
